@@ -9,6 +9,9 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_TOKEN);
 import { transporter, sendUserOrderTemplate } from '../../middlewares/email'
 import { MQTT_DecreaseStocksByProductID } from '../product';
 import { StripeService } from '../../services/stripe.service';
+import { OrderBuilder } from '../core/Builder/OrderBuilder';
+import { EmailService } from '../../services/email.service';
+import { PaymentFacade } from '../core/Facade/PaymentFacade';
 
 const GetOrders = async (req, res) => {
   try {
@@ -68,127 +71,57 @@ const GetOrders = async (req, res) => {
 |--------------------------------------------------
 */
 
-const CreateNewOrder = async (req,res) => {
-  const {items,totalAmount} = req.body.orderInfo;
-  const orderDetail = req.body.orderInfo;
+const CreateNewOrder = async (req, res) => {
+  const { items, totalAmount } = req.body.orderInfo;
+  const _o = req.body.orderInfo;
   const token = req.body.token;
-
+  console.log(token)
   const stripeDescription = items.map((item) => {
-    return `Product ID: ${item.item}, quantity:${item.quantity}`;
+    return `itemID: ${item.item}, quantity:${item.quantity}`;
   });
-
-
-  // If we have token -> Stripe charge
-  if(Object.keys(token).length!==0){
-    const stripeService = new StripeService();
-    stripeService.charge(totalAmount,"vnd",stripeDescription,token)
-  }
-
-}
-
-
-
-const CreateOrder = async (req, res) => {
-
+  // Facade Singleton -> Payment Facade -> Order Builder
+  // -> Call paymentByStripe (in case of we already have stripe token)
+  // -> Call payByCash (in case of we haven't got stripe token)
   try {
-    // Get list items and total amount from client
-    const { items, totalAmount } = req.body.orderInfo;
-    // Get User token
-    const { token } = req.body
-    // Create form send to Stripe 
-    const orderItemsSendToStripe = items.map((item) => {
-      return `itemID: ${item.item}, quantity:${item.quantity}`;
-    });
+    const flag = Object.keys(token).length !== 0 ? true : false
+    let result;
+    const paymentFacade = PaymentFacade.getInstance();
+    if (flag) {
 
-    if (!req.body) {
-      return res.status(400).send({
-        status: "ERR_REQUEST",
-        message: "Please check your request!",
-        data: null,
-      });
+      result = paymentFacade.paymentByStripe(
+        token,
+        stripeDescription,
+        _o.userId,
+        _o.items,
+        _o.name,
+        _o.totalAmount,
+        _o.address,
+        _o.phone,
+        _o.paymentMethod);
+    } else {
+      result = paymentFacade.paymentByCash(
+        _o.userId,
+        _o.items,
+        _o.name,
+        _o.totalAmount,
+        _o.address,
+        _o.phone,
+        _o.paymentMethod);
     }
-
-    // Check token of user can be charge
-    if (Object.keys(token).length !== 0) {
-      try {
-        stripe.charges.create({
-          amount: totalAmount,
-          currency: "vnd",
-          description: `Pookbook's clients Order Items: ${orderItemsSendToStripe}`,
-          source: token.id || 'tok_visa'
-        });
-      } catch (err) {
-        res.send(err);
-      }
-    }
-
-    const state = req.body.orderInfo;
-
-    const orderSaveToDB = new Order({
-      userId: state.userId,
-      items: state.items,
-      name: state.name,
-      totalAmount: state.totalAmount,
-      address: state.address,
-      phone: state.phone,
-      paymentMethod: state.paymentMethod,
-
-    })
-    orderSaveToDB
-      .save()
-      .then((savedOrder) => {
-        const listItems = req.body.orderInfo.items;
-
-        Promise.all(listItems.map(async (item) => {
-          const flag = await MQTT_DecreaseStocksByProductID(item.item, item.quantity)
-          if (!flag) {
-            return res.status(400).send({
-              status: "ERR_REQUEST",
-              message: `Once or more item is out of stocks`,
-            });
-          }
-        }))
-
-        // Find user 
-        User.findOne(savedOrder.userId)
-          .then(user => {
-            // Push new notification to client
-            let data = {
-              title: "Cập nhật đơn hàng",
-              body: `Đơn hàng của bạn đã được đặt thành công.`,
-            }
-            pushNotification(user.pushTokens, data, "");
-
-            //Send email via Nodemailer
-            transporter.sendMail(sendUserOrderTemplate(savedOrder, user), (err, info) => {
-              if (err) {
-                console.log(`** Email err **`, err);
-              } else {
-                console.log(`** Email sent **`, info);
-              }
-            });
-            res.status(200).send({
-              status: "OK",
-              message: "Added Order Successfully",
-              data: savedOrder,
-            });
-
-          })
-          .catch(e => {
-            res.status(400).send({
-              status: "ERR_REQUEST",
-              message: e,
-            });
-          })
-      })
-  } catch (err) {
-    res.status(400).send({
-      status: "ERR_SERVER",
-      message: err,
-
+    return res.status(200).send({
+      status: "OK",
+      message: "Create Order Successfully",
+      data: result,
     });
+  } catch(e){
+    console.log(e)
   }
+  
+
+
 }
+
+
 
 /**
 |--------------------------------------------------
@@ -214,7 +147,7 @@ const UpdateOrder = async (req, res) => {
     const resOrder = await Order.findByIdAndUpdate(id, {
       status: updateStatus,
     });
-    const user : any = User.findById(resOrder.userId);
+    const user: any = User.findById(resOrder.userId);
     pushNotification(user.pushTokens, data, "");
     return res.status(200).send({
       status: "OK",
@@ -258,7 +191,7 @@ const DeleteOrder = async (req, res) => {
 
 export {
   GetOrders as GET_ORDERS,
-  CreateOrder as CREATE_ORDER,
+  CreateNewOrder as CREATE_ORDER,
   UpdateOrder as UPDATE_ORDER,
   DeleteAllOrders as DELETE_ALL_ORDERS,
   DeleteOrder as DELETE_ORDER
