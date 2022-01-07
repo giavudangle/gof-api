@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "build": "node build/app.js",
+    "build": "nodemon build/app.js",
     "compile": "tsc -w",
     "start": "npm run build",
     "dev": "concurrently \"npm run compile\" \"npm run build\""

@@ -36,10 +36,8 @@ Design Patterns: Elements of Reusable Object-Oriented Software is a book on soft
   - Memento
 
 The project applys these patterns :  
-  - [X] Singleton : In core/Singleton
-  - [X] Factory : In core/Factory
-  - [X] Composite : In core/Composition
-  - [X] Iterator : In core/Iterator
-  - [X] Proxy: In core/Proxy
-  - [X] Strategy : In core/Strategy
-  - [X] Chain of Responsibility : Using Redux for state management
+  - [X] Singleton : In core/PaymentFacade
+  - [X] Builder : In core/OrderBuilder
+  - [X] Facade : In core/PaymentFacade
+
+
