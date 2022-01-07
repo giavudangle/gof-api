@@ -7,11 +7,11 @@ export class AccountService {
     constructor() {
 
     }
-    isEmailExist = async (email) => {
+    isEmailExist = async (email : string) => {
         const flag = await User.findOne({ email })
         return flag;
     }
-    registerAccount = async (name, email, password) => {
+    registerAccount = async (name: string, email: string, password: string) => {
         const isExist = await this.isEmailExist(email);
         if (isExist) {
             throw new Error('Duplicate email')
@@ -32,7 +32,7 @@ export class AccountService {
     }
 
 
-    loginToAccount = async (email, password) => {
+    loginToAccount = async (email: string, password: string) => {
         const user = await User.findOne({ email });
         if (!user) {
             throw new Error('Dont find this user');
@@ -59,7 +59,7 @@ export class AccountService {
             profilePicture: user.profilePicture,
             token: token,
             loginAt: Date.now(),
-            expireTime: Date.now() + 60 * 60 * 24 * 7 // 7 days - 1h = 60 * 60 * 24
+            expireTime: Date.now() + 604800000 // 7 days - 1h = 60 * 60 * 24
         }
         return userResponse;
 
