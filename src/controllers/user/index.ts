@@ -19,6 +19,7 @@ import cloudinary from '../../middlewares/cloudinary'
 import { AccountService } from '../../services/auth.service';
 import { EmailService } from '../../services/email.service';
 import { AUTHENTICATION_RESPONSE_CONSTANTS, CLIENT_RESPONSE_CONSTANTS, SERVER_RESPONSE_CONSTANTS } from '../../const/http.const';
+import { EmailObserver } from '../core/Observer/EmailObserver';
 
 
 const UserRegister = async (req, res) => {
@@ -28,15 +29,24 @@ const UserRegister = async (req, res) => {
   try {
     const {name,email,password} = req.body;
     const user = await accountService.registerAccount(name,email,password)
-    emailService.sendRegistrationSuccessEmail(user)
+    const {from,to,subject,html} = emailService.getRegisterUserTemplate(user);
+    const emailObserver = new EmailObserver(from,to,subject,html);
+    emailObserver.subjectEvent.on('success',(infor) => {
+      console.log(infor)
+    })
+    emailObserver.subjectEvent.on('error',(e) =>{
+      console.log(e)
+    })
 
-    // Implement a facade register here 
+    emailObserver.send();
+
     return res.status(SERVER_RESPONSE_CONSTANTS.SERVER_SUCCESS_CODE).send({
       status: "Success",
       message: "Register account successfully",
       data: user
     })
   }catch(e) {
+    console.log(e)
     return res.status(SERVER_RESPONSE_CONSTANTS.SERVER_ERROR_CODE)
     .send({
       error: SERVER_RESPONSE_CONSTANTS.SERVER_ERROR_CONTENT,

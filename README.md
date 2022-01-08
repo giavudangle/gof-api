@@ -36,9 +36,10 @@ Design Patterns: Elements of Reusable Object-Oriented Software is a book on soft
   - Memento
 
 The project applys these patterns :  
-  - [X] Singleton : In core/PaymentFacade
-  - [X] Builder : In core/OrderBuilder
-  - [X] Facade : In core/PaymentFacade
+  - [X] Singleton : In core/Facade
+  - [X] Facade : In core/Facade
+  - [X] Builder : In core/Builder
+  - [X] Prototype : In core/Prototype
 
 The libraries/frameworks apply GOF patterns:
 [1]. Chain Of Responsibility : có thể thấy ở các middleware, sự chuyển tiếp của request đến một middleware nào đó để xử lý ( ví dụ upload image, resize ảnh, lấy token…) là một chuỗi các sự việc liên tiếp được vận chuyển qua các tầng khác nhau để xử lý.

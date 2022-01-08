@@ -5,18 +5,18 @@ export class EmailService {
 
     sendRegistrationSuccessEmail = async (userInformation) => {
         console.log(userInformation)
-        const { from, to, subject, html } = this.registerUserTemplate(userInformation)
+        const { from, to, subject, html } = this.getRegisterUserTemplate(userInformation)
         transporter.sendMail({ from, to, subject, html })
             .then((info) => console.log(`**Email sent**`, info))
     }
 
     sendOrderConfirmationEmail = async (order,user) => {
-        const { from, to, subject, html } = this.sendUserOrderTemplate(order,user)
+        const { from, to, subject, html } = this.getSendUserOrderTemplate(order,user)
         transporter.sendMail({ from, to, subject, html })
             .then((info) => console.log(`**Email sent**`, info))
     }
 
-    private registerUserTemplate = (user) => {
+    public getRegisterUserTemplate = (user) => {
         const from = process.env.EMAIL_LOGIN;
         const to = user.email;
         const subject = "🚀 Register Account Successfully 🚀";
@@ -33,7 +33,7 @@ export class EmailService {
         return { from, to, subject, html };
     };
 
-    private sendUserOrderTemplate = (data, user) => {
+    public getSendUserOrderTemplate = (data, user) => {
         const from = process.env.EMAIL_LOGIN;
         const to = user.email;
         const subject = "🚀 Order Successfully, Your Order Information Below 🚀";
@@ -53,7 +53,7 @@ export class EmailService {
         return { from, to, subject, html };
     };
 
-    private resetPasswordTemplate = (user, url) => {
+    private getResetPasswordTemplate = (user, url) => {
         const from = process.env.EMAIL_LOGIN;
         const to = user.email;
         const subject = "🚀 CodingwithVudang Password Reset 🚀";

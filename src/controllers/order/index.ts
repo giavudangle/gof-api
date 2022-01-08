@@ -4,13 +4,7 @@ import User from '../../models/User';
 
 import pushNotification from '../../middlewares/pushNotification';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_TOKEN);
 
-import { transporter, sendUserOrderTemplate } from '../../middlewares/email'
-import { MQTT_DecreaseStocksByProductID } from '../product';
-import { StripeService } from '../../services/stripe.service';
-import { OrderBuilder } from '../core/Builder/OrderBuilder';
-import { EmailService } from '../../services/email.service';
 import { PaymentFacade } from '../core/Facade/PaymentFacade';
 
 const GetOrders = async (req, res) => {
