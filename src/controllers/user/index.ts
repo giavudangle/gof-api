@@ -19,7 +19,7 @@ import cloudinary from '../../middlewares/cloudinary'
 import { AccountService } from '../../services/auth.service';
 import { EmailService } from '../../services/email.service';
 import { AUTHENTICATION_RESPONSE_CONSTANTS, CLIENT_RESPONSE_CONSTANTS, SERVER_RESPONSE_CONSTANTS } from '../../const/http.const';
-import { EmailObserver } from '../core/Observer/EmailObserver';
+import { EmailObserver } from '../../core/Observer/EmailObserver';
 
 
 const UserRegister = async (req, res) => {

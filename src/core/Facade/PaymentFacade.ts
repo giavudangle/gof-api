@@ -4,9 +4,9 @@
 // Payment Service -> Charge Money Via Stripe
 // Email Service (Apply Observer here) -> Send Order Information
 
-import User from "../../../models/User";
-import { EmailService } from "../../../services/email.service";
-import { StripeService } from "../../../services/stripe.service";
+import User from "../../models/User";
+import { EmailService } from "../../services/email.service";
+import { StripeService } from "../../services/stripe.service";
 import { OrderBuilder } from "../Builder/OrderBuilder";
 
 export class PaymentFacade {

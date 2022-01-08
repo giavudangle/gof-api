@@ -1,4 +1,4 @@
-import Order from "../../../models/Order";
+import Order from "../../models/Order";
 import { IOrderBuilder } from "./IOrderBuilder";
 
 export class OrderBuilder implements IOrderBuilder{

@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 import Favorite from "../../models/Favorite";
-import { FavoritePrototype } from "../core/Prototype/FavoritePrototype";
+import { FavoritePrototype } from "../../core/Prototype/FavoritePrototype";
 
 const GetFavorites = (req, res) => {
   Favorite.find()

@@ -1,5 +1,5 @@
 import events from 'events'
-import { transporter } from '../../../middlewares/email';
+import { transporter } from '../../middlewares/email';
 
 export class EmailObserver {
     public from : string;

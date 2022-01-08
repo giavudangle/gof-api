@@ -2,7 +2,7 @@
 // Tạo favoite item bằng việc clone trước đó
 // Giảm chi phí khởi tạo đối tượng
 
-import Favorite from "../../../models/Favorite";
+import Favorite from "../../models/Favorite";
 
 interface IPrototype {
     shallowClone(): IPrototype;

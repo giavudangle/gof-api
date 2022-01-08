@@ -5,7 +5,7 @@ import User from '../../models/User';
 import pushNotification from '../../middlewares/pushNotification';
 
 
-import { PaymentFacade } from '../core/Facade/PaymentFacade';
+import { PaymentFacade } from '../../core/Facade/PaymentFacade';
 
 const GetOrders = async (req, res) => {
   try {

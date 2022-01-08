@@ -40,6 +40,8 @@ The project applys these patterns :
   - [X] Facade : In core/Facade
   - [X] Builder : In core/Builder
   - [X] Prototype : In core/Prototype
+  - [X] Observer : In core/Observer
+
 
 The libraries/frameworks apply GOF patterns:
 [1]. Chain Of Responsibility : có thể thấy ở các middleware, sự chuyển tiếp của request đến một middleware nào đó để xử lý ( ví dụ upload image, resize ảnh, lấy token…) là một chuỗi các sự việc liên tiếp được vận chuyển qua các tầng khác nhau để xử lý.
